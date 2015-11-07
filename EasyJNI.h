@@ -26,7 +26,7 @@ T convert(cocos2d::JniMethodInfo&, T x) {
 }
 
 template <typename... Ts>
-void callVoidMethod(const std::string& className, const std::string& methodName, Ts... xs) {
+void callStaticVoidMethod(const std::string& className, const std::string& methodName, Ts... xs) {
     cocos2d::JniMethodInfo t;
     std::string signature = "(" + getJNISignature(xs...) + ")V";
     if (cocos2d::JniHelper::getStaticMethodInfo(t, className.c_str(), methodName.c_str(), signature.c_str())) {
@@ -36,7 +36,7 @@ void callVoidMethod(const std::string& className, const std::string& methodName,
 }
 
 template <typename... Ts>
-std::string callStringMethod(const std::string& className, const std::string& methodName, Ts... xs) {
+std::string callStaticStringMethod(const std::string& className, const std::string& methodName, Ts... xs) {
     std::string ret;
 
     cocos2d::JniMethodInfo t;
@@ -51,7 +51,7 @@ std::string callStringMethod(const std::string& className, const std::string& me
 }
 
 template <typename... Ts>
-bool callBooleanMethod(const std::string& className, const std::string& methodName, Ts... xs) {
+bool callStaticBooleanMethod(const std::string& className, const std::string& methodName, Ts... xs) {
     jboolean jret = JNI_FALSE;
     cocos2d::JniMethodInfo t;
     std::string signature = "(" + getJNISignature(xs...) + ")Z";
