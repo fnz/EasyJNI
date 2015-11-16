@@ -41,4 +41,5 @@ EasyJNI::callStaticVoidMethod("path/to/Logger", "purchase", float(3.14), "USD");
 EasyJNI::callStaticVoidMethod<float, std::string>("path/to/Logger", "purchase", 3.14, "USD");
 ```
 
+
 If the user tries to call Java method with unsupported argument, say CCSprite*, a compile time error will occur, providing the caller with a clear message. If a nonexsitent Java method is called, the error occurs in runtime and the description can be found in logcat output using "EasyJNI" tag. For debugging purposes one may want to add some popup messages instead of log records to EasyJNI::reportError method.
