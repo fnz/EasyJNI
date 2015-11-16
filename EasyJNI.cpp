@@ -2,64 +2,36 @@
 
 #if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
 
-namespace easyjni {
+#include "base/ccUTF8.h"
 
-std::string getJNISignature() {
-    return "";
+#define LOG_TAG "EasyJNI"
+#define LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
+
+std::unordered_map<JNIEnv*, std::vector<jobject>> EasyJNI::localRefs;
+
+jstring EasyJNI::convert(cocos2d::JniMethodInfo& t, const char* x) {
+    jstring ret = cocos2d::StringUtils::newStringUTFJNI(t.env, x ? x : "");
+    localRefs[t.env].push_back(ret);
+    return ret;
 }
 
-template <>
-std::string getJNISignature(bool) {
-    return "Z";
+jstring EasyJNI::convert(cocos2d::JniMethodInfo& t, const std::string& x) {
+    return convert(t, x.c_str());
 }
 
-template <>
-std::string getJNISignature(char) {
-    return "C";
+void EasyJNI::deleteLocalRefs(JNIEnv* env) {
+    if (!env) {
+        return;
+    }
+
+    for (const auto& ref : localRefs[env]) {
+        env->DeleteLocalRef(ref);
+    }
+    localRefs[env].clear();
 }
 
-template <>
-std::string getJNISignature(short) {
-    return "S";
-}
-
-template <>
-std::string getJNISignature(int) {
-    return "I";
-}
-
-template <>
-std::string getJNISignature(long) {
-    return "J";
-}
-
-template <>
-std::string getJNISignature(float) {
-    return "F";
-}
-
-template <>
-std::string getJNISignature(double) {
-    return "D";
-}
-
-template <>
-std::string getJNISignature(const char*) {
-    return "Ljava/lang/String;";
-}
-
-template <>
-std::string getJNISignature(std::string) {
-    return "Ljava/lang/String;";
-}
-
-jstring convert(cocos2d::JniMethodInfo& t, const char* x) {
-    return t.env->NewStringUTF(x);
-}
-
-jstring convert(cocos2d::JniMethodInfo& t, std::string x) {
-    return t.env->NewStringUTF(x.c_str());
-}
+void EasyJNI::reportError(const std::string& className, const std::string& methodName, const std::string& signature) {
+    LOGE("Failed to find static java method. Class name: %s, method name: %s, signature: %s ",  className.c_str(), methodName.c_str(), signature.c_str());
 }
 
 #endif
